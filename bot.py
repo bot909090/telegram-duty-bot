@@ -193,12 +193,14 @@ async def duty(message: types.Message):
     # 👑 Админ панель
     if message.text == "👑 Админ панель":
         if str(message.from_user.id) != ADMIN_ID:
+            await message.answer("❌ У тебя нет доступа")
             return
 
         keyboard = ReplyKeyboardMarkup(
             keyboard=[
                 [KeyboardButton(text="📋 Список пользователей")],
-                [KeyboardButton(text="❌ Удалить пользователя")]
+                [KeyboardButton(text="❌ Удалить пользователя")],
+                [KeyboardButton(text="⬅️ Назад")]
             ],
             resize_keyboard=True
         )
@@ -223,6 +225,21 @@ async def duty(message: types.Message):
             return
 
         await message.answer("Введи ID пользователя:\n/remove ID")
+
+    # ⬅️ Назад
+    elif message.text == "⬅️ Назад":
+        if str(message.from_user.id) != ADMIN_ID:
+            return
+
+        keyboard = ReplyKeyboardMarkup(
+            keyboard=[
+                [KeyboardButton(text="📅 Дежурство")],
+                [KeyboardButton(text="📊 Очередь"), KeyboardButton(text="🔜 Следующий")]
+            ],
+            resize_keyboard=True
+        )
+
+        await message.answer("Главное меню 👇", reply_markup=keyboard)
 
     # 📅 Дежурство
     elif message.text == "📅 Дежурство":
@@ -262,17 +279,7 @@ async def duty(message: types.Message):
 
     else:
         await message.answer("Выбери кнопку 👇")
-    elif message.text == "⬅️ Назад" and str(message.from_user.id) == ADMIN_ID:
 
-    keyboard = ReplyKeyboardMarkup(
-        keyboard=[
-            [KeyboardButton(text="📅 Дежурство")],
-            [KeyboardButton(text="📊 Очередь"), KeyboardButton(text="🔜 Следующий")]
-        ],
-        resize_keyboard=True
-    )
-
-    await message.answer("Главное меню 👇", reply_markup=keyboard)
 
 
 # 🔔 УВЕДОМЛЕНИЯ
