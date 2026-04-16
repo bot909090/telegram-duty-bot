@@ -11,6 +11,7 @@ TOKEN = "7658695918:AAFd7MKHYqLwMQiPDOVH0GhJFwtwOEc4rP0"
 # 📁 файл с пользователями
 FILE_NAME = "users.json"
 
+ADMIN_ID = "651360759"
 # загрузка пользователей
 def load_users():
     if os.path.exists(FILE_NAME):
@@ -61,21 +62,22 @@ async def start(message: types.Message):
 
     save_users(users_db)
 
-    # 👇 ВСЁ должно быть с одинаковыми отступами (4 пробела)
-    keyboard = ReplyKeyboardMarkup(
-        keyboard=[
-            [KeyboardButton(text="📅 Дежурство")],
-            [KeyboardButton(text="📊 Очередь"), KeyboardButton(text="🔜 Следующий")]
-        ],
-        resize_keyboard=True
-    )
+    # 👤 обычная клавиатура
+    keyboard = [
+        [KeyboardButton(text="📅 Дежурство")],
+        [KeyboardButton(text="📊 Очередь"), KeyboardButton(text="🔜 Следующий")]
+    ]
+
+    # 👑 если админ — добавляем кнопку
+    if user_id == ADMIN_ID:
+        keyboard.append([KeyboardButton(text="👑 Админ панель")])
+
+    markup = ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
 
     await message.answer(
-    f"👋 Привет, {name}!\n\n"
-    "Этот бот помогает следить за дежурствами 🧹\n\n"
-    "👇 Используй кнопки ниже",
-    reply_markup=keyboard
-)
+        f"👋 Привет, {name}!\n\nИспользуй кнопки ниже 👇",
+        reply_markup=markup
+    )
 
 @dp.message(Command("today"))
 async def today(message: types.Message):
@@ -150,6 +152,52 @@ async def queue(message: types.Message):
             text += f"{i+1}. {name}\n"
 
     await message.answer(text)
+elif message.text == "👑 Админ панель":
+    if str(message.from_user.id) != ADMIN_ID:
+        return
+
+    keyboard = ReplyKeyboardMarkup(
+        keyboard=[
+            [KeyboardButton(text="📋 Список пользователей")],
+            [KeyboardButton(text="❌ Удалить пользователя")]
+        ],
+        resize_keyboard=True
+    )
+
+    await message.answer("👑 Админ панель", reply_markup=keyboard)
+elif message.text == "📋 Список пользователей":
+    if str(message.from_user.id) != ADMIN_ID:
+        return
+
+    text = "👥 Пользователи:\n\n"
+
+    for user_id, data in users_db.items():
+        text += f"{data['name']} | ID: {user_id}\n"
+
+    await message.answer(text)
+elif message.text.startswith("❌"):
+    if str(message.from_user.id) != ADMIN_ID:
+        return
+
+    await message.answer("Введи ID пользователя для удаления:\n/remove ID")
+@dp.message(Command("remove"))
+async def remove_user(message: types.Message):
+    if str(message.from_user.id) != ADMIN_ID:
+        await message.answer("❌ Нет доступа")
+        return
+
+    try:
+        user_id = message.text.split()[1]
+
+        if user_id in users_db:
+            del users_db[user_id]
+            save_users(users_db)
+            await message.answer("✅ Пользователь удалён")
+        else:
+            await message.answer("❌ Не найден")
+
+    except:
+        await message.answer("⚠ Используй: /remove ID")
 @dp.message()
 async def duty(message: types.Message):
 
