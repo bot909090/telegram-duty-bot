@@ -262,6 +262,17 @@ async def duty(message: types.Message):
 
     else:
         await message.answer("Выбери кнопку 👇")
+    elif message.text == "⬅️ Назад" and str(message.from_user.id) == ADMIN_ID:
+
+    keyboard = ReplyKeyboardMarkup(
+        keyboard=[
+            [KeyboardButton(text="📅 Дежурство")],
+            [KeyboardButton(text="📊 Очередь"), KeyboardButton(text="🔜 Следующий")]
+        ],
+        resize_keyboard=True
+    )
+
+    await message.answer("Главное меню 👇", reply_markup=keyboard)
 
 
 # 🔔 УВЕДОМЛЕНИЯ
