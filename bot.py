@@ -69,7 +69,7 @@ async def start(message: types.Message):
     ]
 
     # 👑 если админ — добавляем кнопку
-    elif user_id == ADMIN_ID:
+    if user_id == ADMIN_ID:
         keyboard.append([KeyboardButton(text="👑 Админ панель")])
 
     markup = ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
