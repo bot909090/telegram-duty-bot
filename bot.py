@@ -152,34 +152,7 @@ async def queue(message: types.Message):
             text += f"{i+1}. {name}\n"
 
     await message.answer(text)
-elif message.text == "👑 Админ панель":
-    if str(message.from_user.id) != ADMIN_ID:
-        return
 
-    keyboard = ReplyKeyboardMarkup(
-        keyboard=[
-            [KeyboardButton(text="📋 Список пользователей")],
-            [KeyboardButton(text="❌ Удалить пользователя")]
-        ],
-        resize_keyboard=True
-    )
-
-    await message.answer("👑 Админ панель", reply_markup=keyboard)
-elif message.text == "📋 Список пользователей":
-    if str(message.from_user.id) != ADMIN_ID:
-        return
-
-    text = "👥 Пользователи:\n\n"
-
-    for user_id, data in users_db.items():
-        text += f"{data['name']} | ID: {user_id}\n"
-
-    await message.answer(text)
-elif message.text.startswith("❌"):
-    if str(message.from_user.id) != ADMIN_ID:
-        return
-
-    await message.answer("Введи ID пользователя для удаления:\n/remove ID")
 @dp.message(Command("remove"))
 async def remove_user(message: types.Message):
     if str(message.from_user.id) != ADMIN_ID:
@@ -217,8 +190,42 @@ async def duty(message: types.Message):
     current_index = (day // 3) % len(users_list)
     current_user_id = users_list[current_index]
 
+    # 👑 Админ панель
+    if message.text == "👑 Админ панель":
+        if str(message.from_user.id) != ADMIN_ID:
+            return
+
+        keyboard = ReplyKeyboardMarkup(
+            keyboard=[
+                [KeyboardButton(text="📋 Список пользователей")],
+                [KeyboardButton(text="❌ Удалить пользователя")]
+            ],
+            resize_keyboard=True
+        )
+
+        await message.answer("👑 Админ панель", reply_markup=keyboard)
+
+    # 📋 Список пользователей
+    elif message.text == "📋 Список пользователей":
+        if str(message.from_user.id) != ADMIN_ID:
+            return
+
+        text = "👥 Пользователи:\n\n"
+
+        for user_id, data in users_db.items():
+            text += f"{data['name']} | ID: {user_id}\n"
+
+        await message.answer(text)
+
+    # ❌ Удаление
+    elif message.text.startswith("❌"):
+        if str(message.from_user.id) != ADMIN_ID:
+            return
+
+        await message.answer("Введи ID пользователя:\n/remove ID")
+
     # 📅 Дежурство
-    if message.text == "📅 Дежурство":
+    elif message.text == "📅 Дежурство":
         if str(message.from_user.id) == current_user_id:
             await message.answer("🧹 Сегодня дежуришь ТЫ 😎")
         else:
