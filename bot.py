@@ -226,22 +226,23 @@ async def duty(message: types.Message):
 
         await message.answer("Введи ID пользователя:\n/remove ID")
 
+    # ⬅️ Назад
     elif message.text == "⬅️ Назад":
 
-    user_id = str(message.from_user.id)
+        user_id = str(message.from_user.id)
 
-    keyboard = [
-        [KeyboardButton(text="📅 Дежурство")],
-        [KeyboardButton(text="📊 Очередь"), KeyboardButton(text="🔜 Следующий")]
-    ]
+        keyboard = [
+            [KeyboardButton(text="📅 Дежурство")],
+            [KeyboardButton(text="📊 Очередь"), KeyboardButton(text="🔜 Следующий")]
+        ]
 
-    # 👑 если админ — добавляем кнопку обратно
-    if user_id == ADMIN_ID:
-        keyboard.append([KeyboardButton(text="👑 Админ панель")])
+        # 👑 если админ — добавляем кнопку обратно
+        if user_id == ADMIN_ID:
+            keyboard.append([KeyboardButton(text="👑 Админ панель")])
 
-    markup = ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
+        markup = ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
 
-    await message.answer("Главное меню 👇", reply_markup=markup)
+        await message.answer("Главное меню 👇", reply_markup=markup)
 
     # 📅 Дежурство
     elif message.text == "📅 Дежурство":
